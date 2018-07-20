@@ -12,6 +12,18 @@ import (
 	"encoding/json"
 )
 
+/**
+
+eq / ne / lt / le / gt / ge
+这类函数一般配合在 if 中使用
+eq: arg1 == arg2
+ne: arg1 != arg2
+lt: arg1 < arg2
+le: arg1 <= arg2
+gt: arg1 > arg2
+ge: arg1 >= arg2
+ */
+
 type IndexController struct {
 	BaseController
 }
@@ -20,6 +32,80 @@ type IndexController struct {
 func (this *IndexController) Index() {
 	this.Data["pageTitle"] = "系统概况"
 	this.Data["okJob"] = "test.go"
+	this.display()
+}
+
+//添加用户
+func (this *IndexController) AddUser() {
+	beego.ReadFromRequest(&this.Controller)
+	if this.isPost() {
+		addUser := new(models.User)
+		addUser.Email = this.GetString("email")
+		addUser.UserName = this.GetString("user_name")
+		password1 := this.GetString("password1")
+		password2 := this.GetString("password2")
+		permission := this.GetStrings("permission")
+
+		pJ ,_ := json.Marshal(permission)
+
+		if password1 != "" {
+			if(len(password1) < 6) {
+				this.ajaxMsg("密码长度必须大于6",MSG_ERR)
+			} else if password1 != password2 {
+				this.ajaxMsg("两次输入密码不一致",MSG_ERR)
+			} else {
+				addUser.Salt = string(utils.RandomCreateBytes(10))
+				addUser.Password = libs.Md5([]byte(password1 + addUser.Salt))
+				if len(permission) > 0 {
+					//权限部分
+					addUser.Permission = string(pJ)
+				}
+
+				if len(permission) > 0 {
+					//权限部分
+					addUser.Permission = string(pJ)
+					pt :=  map[string]int{}
+					for _,v := range permission {
+						pt[v] = 1
+					}
+					fmt.Println(pt)
+					pJt ,_ := json.Marshal(pt)
+					addUser.Ptest = string(pJt)
+
+				}
+				models.UserAdd(addUser)
+			}
+		} else {
+			this.ajaxMsg("没有密码不能提交",MSG_ERR)
+		}
+
+
+		this.ajaxMsg("", MSG_OK)
+
+	}
+
+	permissionList,_ := beego.AppConfig.GetSection("permission")
+
+	type MergePermission struct {
+		NameKey string
+		Title string
+		Checked string
+	}
+
+	mergeHtml := map[string]MergePermission{}
+
+	for k,v := range permissionList {
+
+		mergeHtml[k] = MergePermission{
+			NameKey:k,
+			Title:v,
+			Checked:"",
+		}
+	}
+
+	this.Data["mergeHtml"] = mergeHtml
+
+	this.Data["pageTitle"] = "添加用户"
 	this.display()
 }
 
@@ -75,7 +161,33 @@ func (this *IndexController) Profile() {
 	this.Data["pageTitle"] = "资料修改"
 	this.Data["user"] = user
 	this.Data["password"] = user
-	this.Data["permission"],_ = beego.AppConfig.GetSection("permission")
+	permissionList,_ := beego.AppConfig.GetSection("permission")
+
+	type MergePermission struct {
+		NameKey string
+		Title string
+		Checked string
+	}
+
+	mergeHtml := map[string]MergePermission{}
+
+	for k,v := range permissionList {
+		checked := ""
+		if this.ptest[k] > 0 {
+			checked = "checked"
+		}
+		mergeHtml[k] = MergePermission{
+			NameKey:k,
+			Title:v,
+			Checked:checked,
+		}
+	}
+
+	this.Data["mergeHtml"] = mergeHtml
+
+	fmt.Print(this.ptest)
+	fmt.Print(this.Data["permission"])
+	fmt.Print(mergeHtml)
 	this.display()
 }
 

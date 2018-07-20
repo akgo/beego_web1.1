@@ -181,6 +181,18 @@
                                 </a>
                             </li>
                         </ul>
+                        <ul class="navContent" >
+
+                            <li {{if eq .curRoute "main.addUser"}}class="active"{{end}}>
+                            <div class="showtitle" style="width:100px;">
+                                添加用户
+                            </div>
+                            <a href="/addUser">
+                                <span class="sublist-icon glyphicon glyphicon-user"></span>
+                                <span class="sub-title">添加用户</span>
+                            </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

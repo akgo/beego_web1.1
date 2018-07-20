@@ -6,7 +6,6 @@ import (
 	"strings"
 	"strconv"
 	"beego_web1.1/libs"
-	"fmt"
 	"encoding/json"
 )
 
@@ -48,12 +47,13 @@ func (this *BaseController) Prepare() {
 	}
 
 	if this.ptest[this.controllerName + "." + this.actionName] < 1 {
-		this.ajaxMsg("权限错误",MSG_ERR)
+		if this.actionName != "login" && this.actionName != "logout"  {
+			this.ajaxMsg("权限错误",MSG_ERR)
+		}
 	}
 
 	if !pState {
 		//this.ajaxMsg("权限错误",MSG_ERR)
-		fmt.Println("NNNNNNNNNNNN-------------------------NNNNNNNNNNNNNNN")
 	}
 
 	this.Data["curController"] = this.controllerName

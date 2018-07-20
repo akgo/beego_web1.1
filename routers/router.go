@@ -10,6 +10,7 @@ func init() {
 	beego.Router("/login", &controllers.IndexController{}, "*:Login")
 	beego.Router("/logout", &controllers.IndexController{}, "*:Logout")
 	beego.Router("/profile", &controllers.IndexController{}, "*:Profile")
+	beego.Router("/addUser", &controllers.IndexController{}, "*:AddUser")
 	beego.Router("/gettime", &controllers.IndexController{}, "*:GetTime")
 	beego.AutoRouter(&controllers.TaskController{})
 	beego.AutoRouter(&controllers.GroupController{})

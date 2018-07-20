@@ -69,10 +69,11 @@
             </tr>
             </thead>
             <tbody>
-            {{range $k,$v := .permission}}
+            {{range $k,$v := .mergeHtml}}
+
             <tr style="background: #f8f8f8" >
-                <td class="chk"><input type="checkbox" name="permission"  value="{{$k}}" /></td>
-                <td> {{$v}} </td>
+                <td class="chk"><input  type="checkbox" name="permission"  value="{{$v.NameKey}}" {{$v.Checked}} /></td>
+                <td> {{$v.Title}} </td>
             </tr>
             {{end}}
 
